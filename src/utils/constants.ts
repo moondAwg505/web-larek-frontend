@@ -1,6 +1,16 @@
+// Базовые URL для API
 export const API_URL = `${process.env.API_ORIGIN}/api/weblarek`;
 export const CDN_URL = `${process.env.API_ORIGIN}/content/weblarek`;
 
-export const settings = {
+export const settings: { [key: string]: string } = {
+	'софт-скил': 'card__category_soft',
+	'хард-сктл': 'card__category_hard',
+	кнопка: 'card__category-_button',
+	дополнительно: 'card__category_additional',
+	другое: 'card__category_other',
+};
 
+export const pay: { [key: string]: string } = {
+	card: 'online',
+	cash: 'cash',
 };
