@@ -90,13 +90,13 @@ ___________
 
 Асбтарктный класс, служит для создания интерфейса пользователя.
 
-**Свойства класса*
+*Свойства класса*
 
 ```
 readonly container: HTMLElement - Коренвого Dom-элемент
 ```
 
-**Методы:*
+*Методы:*
 
 ```
 * toggleClass(element: HTMLElement, className: string, force?: boolean) - Переключает класс
@@ -113,7 +113,7 @@ readonly container: HTMLElement - Коренвого Dom-элемент
 
 Абстрактеый класс, принимает даные и события.
 
-Метод: 
+*Метод:* 
 
 ```
 emitChanges(event: string, payload?: object) - Сообщает слушателям об изменении
@@ -124,20 +124,20 @@ emitChanges(event: string, payload?: object) - Сообщает слушател
 
 Класс управляет существуюущей HTML формой, добавляя валидацию, обработку событи и синхранизацию с данными
 
-**Свойства класса*
+*Свойства класса*
 
 ```
 protected _submit: HTMLButtonElement;
 protected _errors: HTMLElement;
 ```
 
-**Коснтруктор класса:*
+*Коснтруктор класса:*
 
 ```
 constructor(protected container: HTMLFormElement, protected events: IEvents) - Принимает начальные данные и объект событий для уведомления об изменениях формы.
 ```
 
-**Методы:*
+*Методы:*
 
 ```
 * protected onInputChange(field: keyof T, value: string) - Обрабочик событий ввода, который обрабатывает изменения значений полей формы.
@@ -151,14 +151,14 @@ constructor(protected container: HTMLFormElement, protected events: IEvents) - �
 
 Отвечает за попап, открытие и закртие, и его обновления
 
-**Свойства класса*
+*Свойства класса*
 
 ```
 protected _closeButton: HTMLButtonElement;
 protected _content: HTMLElement;
 ```
 
-**Коснтруктор класса:*
+*Коснтруктор класса:*
 
 ```
 constructor(container: HTMLElement, protected events: IEvents)
@@ -178,13 +178,13 @@ constructor(container: HTMLElement, protected events: IEvents)
 
 Связь с бэкендом
 
-**Конструктор:*
+*Конструктор:*
 
 ```
 constructor(cdn: string, baseUrl: string, options?: RequestInit) - Установка данных с помощью API_URL, CDN_URL
 ```
 
-**Методы:*
+*Методы:*
 
 ```
 * getProductList(): Promise<IProduct[]> - Получение данных о товарах с сервера
@@ -196,7 +196,7 @@ constructor(cdn: string, baseUrl: string, options?: RequestInit) - Устано�
 
 Состояние приложения
 
-**Свойства класса*
+*Свойства класса*
 
 ```
 	catalog: IProduct[]; - Товары
@@ -214,7 +214,7 @@ constructor(cdn: string, baseUrl: string, options?: RequestInit) - Устано�
 	preview: string | null; - Отображение товара по ID
 ```
 
-**Методы:*
+*Методы:*
 
 ```
 * addBasket(product: IProduct) - Добавление товара в корзину
@@ -232,7 +232,7 @@ constructor(cdn: string, baseUrl: string, options?: RequestInit) - Устано�
 * contactReset() - Отчистка полей формы
 ```
 
-**События в приложении*
+*События в приложении*
 
 ```
 * 'items:changed' - При обновлении каталога товаров.
@@ -246,13 +246,13 @@ constructor(cdn: string, baseUrl: string, options?: RequestInit) - Устано�
 
 Отвечает за отображение состояния корзины
 
-**Конструктор:*
+*Конструктор:*
 
 ```
 constructor(container: HTMLElement, protected events: EventEmitter) 
 ```
 
-**Свойства класса*
+*Свойства класса*
 
 ```
 protected _list: HTMLElement;
@@ -260,7 +260,7 @@ protected _price: HTMLElement;
 protected _button: HTMLButtonElement;
 ```
 
-**Методы:*
+*Методы:*
 
 ```
 * set items(items: HTMLElement[]) - Обновляет список товаров в корзине.
@@ -272,13 +272,13 @@ protected _button: HTMLButtonElement;
 
 Отвечает за отображение и поведение карточки товара.
 
-**Конструктор:*
+*Конструктор:*
 
 ```
 constructor(container: HTMLElement, actions: ICardActions) - 
 ```
 
-**Свойства класса*
+*Свойства класса*
 
 ```
 protected _identifierCard?: HTMLElement; - Id товара.
@@ -291,7 +291,7 @@ protected _button?: HTMLButtonElement; - Кнопка взаимодействи
 protected _buttonTitle: string; - Текст внутри кнопки.
 ```
 
-**Методы:*
+*Методы:*
 
 ```
 * set id(value: string) - Утснавливает ID товара.
@@ -315,19 +315,19 @@ protected _buttonTitle: string; - Текст внутри кнопки.
 
 Работает с данными заказа, управляют формами покупки. Наследуется от Form<IOrder>.
 
-**Конструктор:*
+*Конструктор:*
 
 ```
 constructor(container: HTMLFormElement, events: IEvents)
 ```
 
-**Свойства класса*
+*Свойства класса*
 
 ```
 protected _payment: HTMLButtonElement[];
 ```
 
-**Методы:*
+*Методы:*
 
 ```
 * set address(value: string) - Устанавливает значение адреса в поле ввода.
@@ -341,13 +341,13 @@ protected _payment: HTMLButtonElement[];
 
 Работает с данными заказа, управляют формами покупки. Наследуется от Form<IOrder>.
 
-**Конструктор:*
+*Конструктор:*
 
 ```
 constructor(container: HTMLFormElement, events: IEvents)
 ```
 
-**Методы:*
+*Методы:*
 
 ```
 * set phone(value: string) - Устанавливает значение телефона в поле ввода.
@@ -357,7 +357,7 @@ constructor(container: HTMLFormElement, events: IEvents)
 ```
 
 
-**Класс Page*
+*Класс Page*
 
 Управляет основными элементами страницы.
 
@@ -367,7 +367,7 @@ constructor(container: HTMLFormElement, events: IEvents)
 constructor(container: HTMLElement, protected events: IEvents)
 ```
 
-**Свойства класса*
+*Свойства класса*
 
 ```
 protected _counter: HTMLElement;
@@ -376,7 +376,7 @@ protected _wrapper: HTMLElement;
 protected _basket: HTMLElement;
 ```
 
-**Методы:*
+*Методы:*
 
 ```
 * set counter(value: number) - Обновляет счётчик товаров в корзине.
@@ -387,20 +387,20 @@ protected _basket: HTMLElement;
 
 **Класс Success**
 
-**Конструктор:* 
+*Конструктор:* 
 
 ```
 constructor(container: HTMLElement, protected actions?: ISuccessActions)
 ```
 
-**Свойства класса*
+*Свойства класса*
 
 ```
 protected _total: HTMLElement;
 protected _closeButton: HTMLButtonElement;
 ```
 
-**Методы:*
+*Методы:*
 
 ```
 * set total(value: string) - Устанавливает текст с суммой заказа.
