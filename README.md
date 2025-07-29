@@ -164,7 +164,7 @@ protected _content: HTMLElement;
 constructor(container: HTMLElement, protected events: IEvents)
 ```
 
-**Методы:*
+*Методы:*
 
 ```
 * set content(value: HTMLElement) - Динамическое обновление модержимого попапа
@@ -361,7 +361,7 @@ constructor(container: HTMLFormElement, events: IEvents)
 
 Управляет основными элементами страницы.
 
-**Конструктор:* 
+*Конструктор:* 
 
 ```
 constructor(container: HTMLElement, protected events: IEvents)
