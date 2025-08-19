@@ -1,22 +1,29 @@
 import { Form } from './common/form';
 import { IOrder } from '../types';
-import { IEvents } from './base/events';
-import { ensureAllElements } from '../utils/utils';
+import { IEvents } from './base/BaseEvents';
 
 export class Order extends Form<IOrder> {
-	protected _payment: HTMLButtonElement[];
+	private _paymentButtons: HTMLButtonElement[] = [];
 
 	constructor(container: HTMLFormElement, events: IEvents) {
 		super(container, events);
 
-		this._payment = ensureAllElements(`.button_alt`, this.container);
+		// Ищем все кнопки оплаты внутри формы
+		this._paymentButtons = Array.from(
+			container.querySelectorAll<HTMLButtonElement>('.button_alt')
+		);
 
-		this._payment.forEach((button) => {
+		// Навешиваем обработчики
+		this._paymentButtons.forEach((button) => {
 			button.addEventListener('click', () => {
-				this.payment = button.name;
-				this.onInputChange(`payment`, button.name);
+				this.payment = button.name; // меняем выбранный способ оплаты
+				this.onInputChange('payment', button.name); // уведомляем базовый класс
 			});
 		});
+	}
+
+	set valid(value: boolean) {
+		this._submit.disabled = !value;
 	}
 
 	set address(value: string) {
@@ -25,23 +32,20 @@ export class Order extends Form<IOrder> {
 	}
 
 	set payment(name: string) {
-		this._payment.forEach((button) => {
-			this.toggleClass(button, 'button_alt-active', button.name === name);
+		// Визуально выделяем выбранную кнопку
+		this._paymentButtons.forEach((button) => {
+			button.classList.toggle('button_alt-active', button.name === name);
 		});
 	}
 
-	clearFieldPayment() {
-		this._payment.forEach((button) => {
-			this.toggleClass(button, 'button_alt-active', false);
+	clearPayment() {
+		this._paymentButtons.forEach((button) => {
+			button.classList.remove('button_alt-active');
 		});
-	}
-
-	set valid(value: boolean) {
-		this._submit.disabled = !value;
 	}
 }
 
-export class Contact extends Form<IOrder> {
+export class Contacts extends Form<IOrder> {
 	constructor(container: HTMLFormElement, events: IEvents) {
 		super(container, events);
 	}
@@ -60,4 +64,3 @@ export class Contact extends Form<IOrder> {
 		this._submit.disabled = !value;
 	}
 }
-

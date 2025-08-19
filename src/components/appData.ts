@@ -1,117 +1,126 @@
-import { Model } from './base/model';
+import { Model } from './base/BaseModel';
 import {
-	IProduct,
-	IOrder,
 	IApiStatus,
+	IProduct,
 	ErrorForm,
-	IDelivery,
+	IOrder,
 	IContact,
+	IDelivery,
 } from '../types/index';
 
-export interface CatalogChangeEvent {
-	products: IProduct[];
-}
-
-export class AppState extends Model<AppState> {
-	catalog: IProduct[];
+export class AppState extends Model<IApiStatus> {
+	catalog: IProduct[] = [];
 	basket: IProduct[] = [];
 	order: IOrder = {
-		total: 0,
-		items: [],
-		phone: '',
 		email: '',
-		payment: '',
+		phone: '',
 		address: '',
-		paying: ''
+		payment: '',
+		items: [],
+		total: 0,
+		paying: '',
 	};
-	
-	orderError: ErrorForm = {};
+
 	preview: string | null;
+	formErrors: ErrorForm = {};
+	cart: any;
+	card: any;
 
 	addBasket(product: IProduct) {
-		this.basket.push(product);
-		this.updateBasket();
+		// Добавляем товар, если его ещё нет в корзине
+		if (!this.basket.find((p) => p.id === product.id)) {
+			this.basket.push(product);
+			this.order.items.push(product.id); // ID добавляем синхронно
+			this.updateBasket();
+		}
 	}
 
 	removeBasket(product: IProduct) {
-		this.basket = this.basket.filter((item) => item.id !== product.id);
+		this.basket = this.basket.filter((p) => p.id !== product.id);
+		this.order.items = this.order.items.filter((id) => id !== product.id);
 		this.updateBasket();
 	}
 
 	clearBasket() {
 		this.basket = [];
+		this.order.items = [];
 		this.updateBasket();
 	}
 
 	updateBasket() {
-		this.events.emit('catalog:change', {
-			products: this.basket,
-		});
-		this.events.emit('basket:change', {
-			products: this.basket,
-		});
+		this.order.total = this.getTotal();
+		this.emitChanges('basket:change', this.basket);
 	}
 
-	getTotal(): number {
-		return this.basket.reduce((acc, item) => acc + item.price, 0);
+	getTotal() {
+		return this.basket.reduce((sum, item) => sum + item.price, 0);
 	}
 
-	setCatalog(products: IProduct[]) {
-		this.catalog = products;
-		this.emitChanges('items:changed', { catalog: this.catalog });
+	setCatalog(items: IProduct[]) {
+		this.catalog = items;
 	}
 
-	setOrderField(field: keyof IDelivery, value: string) {
-		this.order[field] = value;
-		if (this.validateOrder()) {
-		}
+	setPreview(product: IProduct) {
+		this.preview = product.id;
+		this.emitChanges('preview:changed', product);
 	}
 
-	setContactField(field: keyof IContact, value: string) {
+	setOrderField<Field extends keyof IOrder>(field: Field, value: IOrder[Field]) {
 		this.order[field] = value;
 
-		if (this.validateContact()) {
+		if (this.validOrder()) {
 		}
 	}
 
-	validateOrder() {
-		const errors: typeof this.orderError = {};
-		if (!this.order.payment) {
-			errors.payment = 'Необходимо указать cпособ оплаты';
+	setContactField<Field extends keyof IOrder>(field: Field, value: IOrder[Field]) {
+		this.order[field] = value;
+
+		if (this.validOrder()) {
 		}
+	}
+
+	validContact() {
+		const errors: typeof this.formErrors = {};
+
+		if (
+			!this.order.email ||
+			!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.order.email)
+		) {
+			errors.email = 'Введите корректный email';
+		}
+
+		if (!this.order.phone || !/^\+?\d{10,15}$/.test(this.order.phone)) {
+			errors.phone = 'Введите корректный номер телефона';
+		}
+
+		this.formErrors = errors;
+		this.emitChanges('formErrors:change', this.formErrors);
+
+		return Object.keys(errors).length === 0;
+	}
+
+	validOrder() {
+		const errors: typeof this.formErrors = {};
+
 		if (!this.order.address) {
-			errors.address = 'Необходимо указать адрес доставки';
+			errors.address = 'Введите адрес';
 		}
-		this.orderError = errors;
-		this.events.emit('orderformErrors:change', this.orderError);
+
+		this.formErrors = errors;
+		this.emitChanges('formErrors:change', this.formErrors);
+
 		return Object.keys(errors).length === 0;
 	}
 
-	validateContact() {
-		const errors: typeof this.orderError = {};
-		if (!this.order.email) {
-			errors.email = 'Необходимо указать email';
-		}
-		if (!this.order.phone) {
-			errors.phone = 'Необходимо указать телефон';
-		}
-		this.orderError = errors;
-		this.events.emit('contactsformErrors:change', this.orderError);
-		return Object.keys(errors).length === 0;
-	}
-
-	setPreview(item: IProduct) {
-		this.preview = item.id;
-		this.emitChanges('preview:changed', item);
-	}
-
-	orderReset() {
-		this.order.address = '';
-		this.order.payment = '';
-	}
-
-	contactReset() {
-		this.order.email = '';
-		this.order.phone = '';
+	resetOrder() {
+		this.order = {
+			email: '',
+			phone: '',
+			address: '',
+			payment: '',
+			items: [],
+			total: 0,
+			paying: '',
+		};
 	}
 }

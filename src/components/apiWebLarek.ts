@@ -1,20 +1,20 @@
-import { IOrder, IOrderResult, IProduct, ApiListResponse } from '../types/index';
-import { Api } from './base/api';
+import { IProduct, IOrder, IOrderResult, ApiListResponse } from '../types';
+import { Api } from './base/BaseApi';
 
-export interface IAppAPI {
-	getProductList: () => Promise<IProduct[]>;
-	order: (order: IOrder) => Promise<IOrderResult>;
-}
-
-export class AppApi extends Api implements IAppAPI {
+export class AppApi extends Api {
 	readonly cdn: string;
 
-	constructor(cdn: string, baseUrl: string, options?: RequestInit) {
-		super(baseUrl, options);
-
-		this.cdn = cdn;
+	constructor(cdnUrl: string, apiUrl: string, options?: RequestInit) {
+		super(apiUrl, options);
+		this.cdn = cdnUrl;
 	}
 
+	private getImageUrl(path: string) {
+		return this.cdn + path;
+	}
+
+
+	// Получает весь список товара
 	getProductList(): Promise<IProduct[]> {
 		return this.get('/product').then((data: ApiListResponse<IProduct>) =>
 			data.items.map((item) => ({
@@ -24,7 +24,13 @@ export class AppApi extends Api implements IAppAPI {
 		);
 	}
 
-	order(order: IOrder): Promise<IOrderResult> {
-		return this.post('/order', order).then((data: IOrderResult) => data);
+	// Отправляет заказ на сервер
+	createOrder(order: IOrder): Promise<IOrderResult> {
+		return this.post('/order', order)
+			.then((result: IOrderResult) => result)
+			.catch(err => {
+				console.error('Ошибка при создании заказа:', err);
+				throw err;
+			});
 	}
 }

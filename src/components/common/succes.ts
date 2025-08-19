@@ -1,6 +1,6 @@
-import { ISuccsess } from '../types';
-import { Component } from './base/components';
-import { ensureElement } from '../utils/utils';
+import { ISuccsess } from '../../types';
+import { Component } from '../base/BaseComponents';
+import { ensureElement } from '../../utils/utils';
 
 interface ISuccessActions {
 	onClick: () => void;
