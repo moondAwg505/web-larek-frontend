@@ -1,6 +1,7 @@
 import {Component} from "../base/BaseComponents";
 import {ensureElement} from "../../utils/utils";
 import {IEvents} from "../base/BaseEvents";
+import { Cards } from "../Cards";
 
 interface IModalData {
     content: HTMLElement;
@@ -12,7 +13,13 @@ export class Modal extends Component<IModalData> {
 
     constructor(container: HTMLElement, protected events: IEvents) {
         super(container);
+        this.events= events
 
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") {
+                this.close()
+            }
+        })
         this._closeButton = ensureElement<HTMLButtonElement>('.modal__close', container);
         this._content = ensureElement<HTMLElement>('.modal__content', container);
 
@@ -34,11 +41,5 @@ export class Modal extends Component<IModalData> {
         this.container.classList.remove('modal_active');
         this.content = null;
         this.events.emit('modal:close');
-    }
-
-    render(data: IModalData): HTMLElement {
-        super.render(data);
-        this.open();
-        return this.container;
     }
 }

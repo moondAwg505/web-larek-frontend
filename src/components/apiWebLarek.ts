@@ -1,36 +1,30 @@
-import { IProduct, IOrder, IOrderResult, ApiListResponse } from '../types';
+import { IOrder, IOrderResult, IProduct, ApiListResponse } from '../types';
 import { Api } from './base/BaseApi';
 
-export class AppApi extends Api {
+export interface IAppAPI {
+	getProductList: () => Promise<IProduct[]>;
+	order: (order: IOrder) => Promise<IOrderResult>;
+}
+
+export class MarketApi extends Api implements IAppAPI {
 	readonly cdn: string;
 
-	constructor(cdnUrl: string, apiUrl: string, options?: RequestInit) {
-		super(apiUrl, options);
-		this.cdn = cdnUrl;
+	constructor(cdn: string, baseUrl: string, options?: RequestInit) {
+		super(baseUrl, options);
+
+		this.cdn = cdn;
 	}
 
-	private getImageUrl(path: string) {
-		return this.cdn + path;
-	}
-
-
-	// Получает весь список товара
 	getProductList(): Promise<IProduct[]> {
-		return this.get('/product').then((data: ApiListResponse<IProduct>) =>
-			data.items.map((item) => ({
+		return this.get('/product').then((data: ApiListResponse<IProduct>) => {
+			return data.items.map((item) => ({
 				...item,
 				image: this.cdn + item.image,
 			}))
-		);
+	});
 	}
 
-	// Отправляет заказ на сервер
-	createOrder(order: IOrder): Promise<IOrderResult> {
-		return this.post('/order', order)
-			.then((result: IOrderResult) => result)
-			.catch(err => {
-				console.error('Ошибка при создании заказа:', err);
-				throw err;
-			});
+	order(order: IOrder): Promise<IOrderResult> {
+		return this.post('/order', order).then((data: IOrderResult) => data);
 	}
 }

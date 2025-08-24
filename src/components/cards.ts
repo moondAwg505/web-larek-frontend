@@ -13,6 +13,7 @@ export interface ICards extends IProduct {
 }
 
 export class Cards extends Component<ICards> {
+	protected idIdeficationElement?: HTMLElement;
 	protected idElement: HTMLElement;
 	protected titleElement: HTMLElement;
 	protected descriptionElement?: HTMLElement;
@@ -22,20 +23,14 @@ export class Cards extends Component<ICards> {
 	protected button?: HTMLButtonElement;
 	protected titleButton?: HTMLElement;
 
-	protected idIdefication?: HTMLElement;
-
 	constructor(container: HTMLElement, actions: ICardActions) {
 		super(container);
 
 		this.idElement = container.querySelector('.basket__item-index');
-		this.titleElement = ensureElement<HTMLElement>('card__title', container);
-		this.descriptionElement = ensureElement<HTMLElement>(
-			'card__text',
-			container
-		);
-		this.imageElement = ensureElement<HTMLImageElement>(
-			'card__image',
-			container
+		this.titleElement = ensureElement<HTMLElement>('.card__title', container);
+		this.descriptionElement = container.querySelector('.card__text')
+		this.imageElement = container.querySelector(
+			'.card__image',
 		);
 		this.price = container.querySelector('.card__price') as HTMLElement;
 		this.category = container.querySelector('.card__category') as HTMLElement;
@@ -58,6 +53,14 @@ export class Cards extends Component<ICards> {
 		return this.container.dataset.id || '';
 	}
 
+	set identifierCard(value: string) {
+		this.idIdeficationElement.textContent = value;
+	}
+
+	get identifierCard(): string {
+		return this.idIdeficationElement.textContent || '';
+	}
+
 	set title(value: string) {
 		this.setText(this.titleElement, value);
 	}
@@ -68,10 +71,6 @@ export class Cards extends Component<ICards> {
 
 	set description(value: string) {
 		this.setText(this.descriptionElement, value);
-	}
-
-	get description(): string {
-		return this.descriptionElement.textContent ?? '';
 	}
 
 	set image(value: string) {

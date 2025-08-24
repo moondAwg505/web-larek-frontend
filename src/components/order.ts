@@ -19,6 +19,16 @@ export class Order extends Form<IOrder> {
 				this.payment = button.name; // меняем выбранный способ оплаты
 				this.onInputChange('payment', button.name); // уведомляем базовый класс
 			});
+
+			this.container.querySelector('[name="payment-card"]')
+  ?.addEventListener('click', () => {
+    this.events.emit('payment.method:change', { field: 'payment', value: 'card' });
+  });
+
+this.container.querySelector('[name="payment-cash"]')
+  ?.addEventListener('click', () => {
+    this.events.emit('payment.method:change', { field: 'payment', value: 'cash' });
+  });
 		});
 	}
 

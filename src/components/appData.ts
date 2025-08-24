@@ -8,6 +8,10 @@ import {
 	IDelivery,
 } from '../types/index';
 
+export interface CatalogChangeEvent {
+	products: IProduct[];
+}
+
 export class AppState extends Model<IApiStatus> {
 	catalog: IProduct[] = [];
 	basket: IProduct[] = [];
@@ -58,11 +62,17 @@ export class AppState extends Model<IApiStatus> {
 
 	setCatalog(items: IProduct[]) {
 		this.catalog = items;
+		this.emitChanges('catalog:change', { products: this.catalog });
 	}
 
 	setPreview(product: IProduct) {
 		this.preview = product.id;
 		this.emitChanges('preview:changed', product);
+	}
+
+	setPayment(value:string) {
+		this.order.payment = value
+		this.emitChanges("order:change", this.order)
 	}
 
 	setOrderField<Field extends keyof IOrder>(field: Field, value: IOrder[Field]) {
@@ -72,7 +82,7 @@ export class AppState extends Model<IApiStatus> {
 		}
 	}
 
-	setContactField<Field extends keyof IOrder>(field: Field, value: IOrder[Field]) {
+	setContactField<Field extends keyof IContact>(field: Field, value: IContact[Field]) {
 		this.order[field] = value;
 
 		if (this.validOrder()) {
@@ -113,14 +123,20 @@ export class AppState extends Model<IApiStatus> {
 	}
 
 	resetOrder() {
-		this.order = {
-			email: '',
-			phone: '',
-			address: '',
-			payment: '',
-			items: [],
-			total: 0,
-			paying: '',
-		};
+		this.order.address = '';
+		this.order.payment = '';
 	}
-}
+		// 	email: '',
+		// 	phone: '',
+		// 	address: '',
+		// 	payment: '',
+		// 	items: [],
+		// 	total: 0,
+		// 	paying: '',
+		// ;
+
+		resetContacnt() {
+		this.order.email = '';
+		this.order.phone = '';
+	}
+	}
