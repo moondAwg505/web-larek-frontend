@@ -27,8 +27,6 @@ export class AppState extends Model<IApiStatus> {
 
 	preview: string | null;
 	formErrors: ErrorForm = {};
-	cart: any;
-	card: any;
 
 	addBasket(product: IProduct) {
 		// Добавляем товар, если его ещё нет в корзине

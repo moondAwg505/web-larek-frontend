@@ -14,7 +14,7 @@ export interface ICards extends IProduct {
 
 export class Cards extends Component<ICards> {
 	protected idIdeficationElement?: HTMLElement;
-	protected idElement: HTMLElement;
+	// protected idElement: HTMLElement;
 	protected titleElement: HTMLElement;
 	protected descriptionElement?: HTMLElement;
 	protected imageElement: HTMLImageElement;
@@ -26,15 +26,13 @@ export class Cards extends Component<ICards> {
 	constructor(container: HTMLElement, actions: ICardActions) {
 		super(container);
 
-		this.idElement = container.querySelector('.basket__item-index');
+		// this.idElement = container.querySelector('.basket__item-index');
 		this.titleElement = ensureElement<HTMLElement>('.card__title', container);
-		this.descriptionElement = container.querySelector('.card__text')
-		this.imageElement = container.querySelector(
-			'.card__image',
-		);
+		this.descriptionElement = container.querySelector('.card__text');
+		this.imageElement = container.querySelector('.card__image');
 		this.price = container.querySelector('.card__price') as HTMLElement;
 		this.category = container.querySelector('.card__category') as HTMLElement;
-		this.button = container.querySelector('.card__button');
+		this.button = container.querySelector('.card__button') as HTMLButtonElement;
 
 		if (actions?.onClick) {
 			if (this.button) {
@@ -89,6 +87,12 @@ export class Cards extends Component<ICards> {
 		this.setText(this.category, value);
 		this.category.classList.add(settings[value]);
 	}
+
+	setButtonText(text: string) {
+	if (this.button) {
+		this.button.textContent = text;
+	}
+}
 
 	set buttonState(price: number) {
 		if (!this.button || !this.price) return;

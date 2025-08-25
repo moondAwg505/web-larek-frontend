@@ -6,20 +6,21 @@
 
 src/
 ├── base/ # Базовые классы
-│ ├── components.ts # Базовый компонент (Component)
-│ ├── events.ts # Система событий (EventEmitter)
-│ └── model.ts # Базовая модель (Model)
+  ├── BaseApi.ts # Базовая клиентская логика (Api)
+│ ├── BaseComponents.ts # Базовый компонент (Component)
+│ ├── BasaeEvents.ts # Система событий (EventEmitter)
+│ └── BaseModel.ts # Базовая модель (Model)
 ├── components/ # Бизнес-логика
-│ ├── appData.ts # Состояние приложения (AppStatus)
-│ ├── apiWebLarek.ts # API для работы с бэкендом (AppApi)
-│ ├── basket.ts # Корзина (Basket)
-│ ├── cards.ts # Карточки товаров (Card)
-│ ├── order.ts # Формы заказа (Order, Contact)
-│ ├── page.ts # Главная страница (Page)
-│ └── succes.ts # Успешный заказ (Success)
+│ ├── AppData.ts # Состояние приложения (AppStatus)
+│ ├── ApiWebLarek.ts # API для работы с бэкендом (AppApi)
+│ ├── Cards.ts # Карточки товаров (Card)
+│ ├── Order.ts # Формы заказа (Order, Contact)
+│ └── Page.ts # Главная страница (Page)
 ├── common/ # Общие компоненты
+│ ├── basket.ts # Корзина (Basket)
 │ ├── form.ts # Форма с валидацией (Form)
-│ └── modal.ts # Модальное окно (Modal)
+│ ├── modal.ts # Модальное окно (Modal)
+│ └── succes.ts # Успешный заказ (Success)
 ├── scss/ # Стили
 ├── types/ # Типы данных
 │ ├── index.ts # Интерфейсы приложения
@@ -174,7 +175,7 @@ constructor(container: HTMLElement, protected events: IEvents)
 ```
 
 
-**Класс AppApi**
+**Класс MarketApi**
 
 Связь с бэкендом
 
@@ -228,8 +229,9 @@ constructor(cdn: string, baseUrl: string, options?: RequestInit) - Устано�
 * validateOrder() - Валидцаия формы заказа
 * validateContact() - Валидация формы контактов
 * setPreview(item: IProduct) - Показы товаров
-* orderReset() - Отчистка полей формы
-* contactReset() - Отчистка полей формы
+* setPayment(value:string) - Установка способа оплаты
+* resetOrder() - Отчистка полей формы
+* resetContacnt() - Отчистка полей формы
 ```
 
 *События в приложении*
@@ -239,6 +241,7 @@ constructor(cdn: string, baseUrl: string, options?: RequestInit) - Устано�
 * 'basket:change' - При любом изменении корзины.
 * 'orderformErrors:change' - При ошибках валидации формы доставки/оплаты.
 * 'contactsformErrors:change' - При ошибках валидации формы контактов.
+* 'order:change' - Уведомление системы о изменении заказа.
 ```
 
 
@@ -268,27 +271,27 @@ protected _button: HTMLButtonElement;
 ```
 
 
-**Класс Card**
+**Класс Cards**
 
 Отвечает за отображение и поведение карточки товара.
 
 *Конструктор:*
 
 ```
-constructor(container: HTMLElement, actions: ICardActions) - 
+constructor(container: HTMLElement, actions: ICardActions)
 ```
 
 *Свойства класса*
 
 ```
-protected _identifierCard?: HTMLElement; - Id товара.
-protected _description?: HTMLElement; - Описание товара.
-protected _image?: HTMLImageElement; - Изображение товара.
-protected _title: HTMLElement; - Название товара.
-protected _category?: HTMLElement; - Категория товара.
-protected _price: HTMLElement; - Цена товара.
-protected _button?: HTMLButtonElement; - Кнопка взаимодействия.
-protected _buttonTitle: string; - Текст внутри кнопки.
+protected idIdeficationElement?: HTMLElement; - Id товара.
+protected titleElement: HTMLElement; - Название товара.
+protected descriptionElement?: HTMLElement; - Описание товара.
+protected imageElement: HTMLImageElement; - Изображение товара.
+protected category: HTMLElement; - Категория товара.
+protected price: HTMLElement; - Цена товара.
+protected button?: HTMLButtonElement; - Кнопка взаимодействия.
+protected titleButton?: HTMLElement; - Текст внутри кнопки.
 ```
 
 *Методы:*
@@ -307,7 +310,8 @@ protected _buttonTitle: string; - Текст внутри кнопки.
 * disableButton(value: number | null) - Блокаирует кнопку по условию.
 * set price(value: number) - Цена товара.
 * get price() - Возвращает цену товара.
-* set button(value: string) - Увтснавливает текст кнопки.
+* setButtonText(text: string) - Увтснавливает текст кнопки.
+* set buttonState(price: number) - Делает кнопку активной и на оборот в зависимости от цены продукта.
 ```
 
 
@@ -418,6 +422,7 @@ export interface IProduct {
 	image: string; // URL изображения товара
 	category: string; // Категория ("софт-скил", "хард-скил" и т.д.)
 	price: number | null; // Цена товара
+	buttonText?: string; // Меняет текст кнопки
 }
 ```
 
@@ -449,9 +454,12 @@ export interface IContact {
 
 ```
 export interface IOrder extends IDelivery, IContact {
-	payment: string;
-    total: number // Итоговая сумма заказа
-    items: string[] // ID товаров в заказе
+	address: string; // Адрес доставки
+	payment: string; // Оплата
+	total: number; // Итоговая сумма заказа
+	items: string[]; // ID товаров в заказе
+	phone: string; // Телефон покупателя
+	email: string;
 }
 ```
 

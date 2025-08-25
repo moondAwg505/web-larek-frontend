@@ -6,9 +6,9 @@ import { EventEmitter } from './components/base/BaseEvents';
 import { AppState } from './components/AppData';
 import { MarketApi } from './components/ApiWebLarek';
 import { IOrder, IOrderResult, IProduct } from './types';
-import { Contacts, Order } from './components/Order';
+import { ContactsForm, OrderForm } from './components/Order';
 import { Basket } from './components/common/basket';
-import { Success } from './components/common/succes';
+import { Progres } from './components/common/succes';
 import { Modal } from './components/common/modal';
 import { Page } from './components/Page';
 import { ensureElement, cloneTemplate } from './utils/utils';
@@ -34,9 +34,12 @@ const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 
 // ===== View-компоненты =====
 const page = new Page(document.body, events);
-const modal = new Modal(ensureElement<HTMLTemplateElement>('#modal-container'), events);
-const order = new Order(cloneTemplate(orderTemplate), events);
-const contact = new Contacts(cloneTemplate(contactsTemplate), events);
+const modal = new Modal(
+	ensureElement<HTMLTemplateElement>('#modal-container'),
+	events
+);
+const order = new OrderForm(cloneTemplate(orderTemplate), events);
+const contact = new ContactsForm(cloneTemplate(contactsTemplate), events);
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 
 // ===== Подписки View на Model =====
@@ -47,6 +50,8 @@ events.on<CatalogChangeEvent>('catalog:change', () => {
 		const card = new Cards(cloneTemplate(cardCatalogTemplate), {
 			onClick: () => events.emit('product:select', item),
 		});
+
+		// const buttonText = appData.basket.includes(item) ? 'Удалить из корзины' : 'Добавить в корзину';
 		return card.render({
 			title: item.title,
 			image: item.image,
@@ -78,13 +83,37 @@ events.on('basket:update', () => {
 
 // Открытие карточки товара
 events.on('product:select', (item: IProduct) => {
-  appData.setPreview(item);
-  modal.render({
-    content: new Cards(cloneTemplate(cardPreviewTemplate), {
-      onClick: () => events.emit('basket:add', item),
-    }).render(item),
-  });
-  modal.open();
+	appData.setPreview(item);
+
+	const card = new Cards(cloneTemplate(cardPreviewTemplate), {
+		onClick: () => {
+			// проверяем, есть ли товар в корзине
+			if (appData.basket.some((product) => product.id === item.id)) {
+				events.emit('basket:remove', item);
+			} else {
+				events.emit('basket:add', item);
+			}
+			// обновляем текст кнопки
+			updateButtonText();
+		},
+	});
+
+	// функция для смены текста кнопки
+	function updateButtonText() {
+		const inBasket = appData.basket.some((product) => product.id === item.id);
+		card.setButtonText(inBasket ? 'Убрать из корзины' : 'В корзину');
+	}
+
+	// первый рендер с корректным текстом кнопки
+	modal.render({
+		content: card.render({
+			...item,
+			buttonText: appData.basket.some((p) => p.id === item.id)
+				? 'Удалить из корзины'
+				: 'В корзину',
+		}),
+	});
+	modal.open();
 });
 
 // Добавление в корзину
@@ -112,37 +141,46 @@ events.on('basket:open', () => {
 
 // Открытие форм
 events.on('order:open', () => {
-	modal.render({ content: order.render({ address: '', errors: [], valid: false }) });
+	modal.render({
+		content: order.render({ address: '', errors: [], valid: false }),
+	});
 	modal.open();
 });
 
 events.on('contact:open', () => {
-	modal.render({ content: contact.render({ phone: '', email: '', errors: [], valid: false }) });
+	modal.render({
+		content: contact.render({ phone: '', email: '', errors: [], valid: false }),
+	});
 	modal.open();
 });
 
-// Валидация форм
+// Валидцаия формы заказа
 events.on('formErrors:change', (errors: Partial<IOrder>) => {
-	const { address} = errors;
-	order.valid = !address
-	order.errors = Object.values({ address}).filter(Boolean).join('; ');
+	const { address } = errors;
+	order.valid = !address;
+	order.errors = Object.values({ address }).filter(Boolean).join('; ');
 });
 
+// Валидцаия формы контактов
 events.on('formErrors:change', (errors: Partial<IOrder>) => {
-	const {email, phone } = errors;
+	const { email, phone } = errors;
 	contact.valid = !email && !phone;
-	contact.errors = Object.values({email, phone }).filter(Boolean).join('; ');
+	contact.errors = Object.values({ email, phone }).filter(Boolean).join('; ');
 });
 
 // Обновление данных формы
 events.on(/^order\..*:change/, (data: { field: keyof IOrder; value: string }) =>
 	appData.setOrderField(data.field, data.value)
 );
-events.on(/^contacts\..*:change/, (data: { field: keyof IOrder; value: string }) =>
-	appData.setOrderField(data.field, data.value)
+events.on(
+	/^contacts\..*:change/,
+	(data: { field: keyof IOrder; value: string }) =>
+		appData.setOrderField(data.field, data.value)
 );
-events.on(/^payment\..*:change/, (data: { field: keyof IOrder; value: string }) =>
-	appData.setOrderField(data.field, data.value)
+events.on(
+	/^payment\..*:change/,
+	(data: { field: keyof IOrder; value: string }) =>
+		appData.setOrderField(data.field, data.value)
 );
 
 // Блокировка/разблокировка страницы
@@ -151,24 +189,21 @@ events.on('modal:close', () => (page.locked = false));
 
 // Отправка заказа
 events.on('order:submit', (data: IOrder) => {
-  console.log('order form submitted', data);
-  events.emit('contact:open');
+	console.log('order form submitted', data);
+	events.emit('contact:open');
 });
-
 
 events.on('contacts:submit', () => {
 	api
-		.order(
-			{
-				...appData.order,
-				// ...data,
-				total: appData.getTotal(),
-				items: appData.basket.map((item) => item.id),
-			}
-		)
+		.order({
+			...appData.order,
+			// ...data,
+			total: appData.getTotal(),
+			items: appData.basket.map((item) => item.id),
+		})
 		.then((res) => {
 			appData.clearBasket();
-			const success = new Success(cloneTemplate(successTemplate), {
+			const progres = new Progres(cloneTemplate(successTemplate), {
 				onClick() {
 					modal.close();
 					appData.resetOrder();
@@ -176,7 +211,7 @@ events.on('contacts:submit', () => {
 				},
 			});
 			modal.render({
-				content: success.render({
+				content: progres.render({
 					total: res.total,
 				}),
 			});
@@ -187,6 +222,7 @@ events.on('contacts:submit', () => {
 });
 
 // ===== Запуск: загрузка каталога =====
-api.getProductList()
+api
+	.getProductList()
 	.then((data) => appData.setCatalog(data))
 	.catch(console.error);

@@ -6,6 +6,7 @@ export interface IProduct {
 	image: string; // URL изображения товара
 	category: string; // Категория ("софт-скил", "хард-скил" и т.д.)
 	price: number | null; // Цена товара
+	buttonText?: string; // Меняет текст кнопки
 }
 
 // Представление корзины
@@ -28,8 +29,8 @@ export interface IContact {
 
 // Полные данные заказа
 export interface IOrder extends IDelivery, IContact {
-	address: string;
-	payment: string;
+	address: string; // Адрес доставки
+	payment: string; // Оплата
 	total: number; // Итоговая сумма заказа
 	items: string[]; // ID товаров в заказе
 	phone: string; // Телефон покупателя

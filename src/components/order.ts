@@ -2,7 +2,7 @@ import { Form } from './common/form';
 import { IOrder } from '../types';
 import { IEvents } from './base/BaseEvents';
 
-export class Order extends Form<IOrder> {
+export class OrderForm extends Form<IOrder> {
 	private _paymentButtons: HTMLButtonElement[] = [];
 
 	constructor(container: HTMLFormElement, events: IEvents) {
@@ -22,12 +22,12 @@ export class Order extends Form<IOrder> {
 
 			this.container.querySelector('[name="payment-card"]')
   ?.addEventListener('click', () => {
-    this.events.emit('payment.method:change', { field: 'payment', value: 'card' });
+    this.events.emit('payment.method:change', { method: 'card' });
   });
 
 this.container.querySelector('[name="payment-cash"]')
   ?.addEventListener('click', () => {
-    this.events.emit('payment.method:change', { field: 'payment', value: 'cash' });
+    this.events.emit('payment.method:change', { method: 'card' });
   });
 		});
 	}
@@ -55,7 +55,7 @@ this.container.querySelector('[name="payment-cash"]')
 	}
 }
 
-export class Contacts extends Form<IOrder> {
+export class ContactsForm extends Form<IOrder> {
 	constructor(container: HTMLFormElement, events: IEvents) {
 		super(container, events);
 	}

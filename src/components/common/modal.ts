@@ -15,6 +15,7 @@ export class Modal extends Component<IModalData> {
         super(container);
         this.events= events
 
+        // Закрытие мадолки с помощью ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === "Escape") {
                 this.close()

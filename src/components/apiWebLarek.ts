@@ -11,17 +11,21 @@ export class MarketApi extends Api implements IAppAPI {
 
 	constructor(cdn: string, baseUrl: string, options?: RequestInit) {
 		super(baseUrl, options);
-
 		this.cdn = cdn;
 	}
 
+	// Принимает изображения с сервера
+	private normalizeProduct(item: IProduct): IProduct {
+		return {
+			...item,
+			image: `${this.cdn}${item.image}`,
+		};
+	}
+
 	getProductList(): Promise<IProduct[]> {
-		return this.get('/product').then((data: ApiListResponse<IProduct>) => {
-			return data.items.map((item) => ({
-				...item,
-				image: this.cdn + item.image,
-			}))
-	});
+		return this.get('/product').then((data: ApiListResponse<IProduct>) =>
+			data.items.map((item) => this.normalizeProduct(item))
+		);
 	}
 
 	order(order: IOrder): Promise<IOrderResult> {

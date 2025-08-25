@@ -6,7 +6,7 @@ interface ISuccessActions {
 	onClick: () => void;
 }
 
-export class Success extends Component<ISuccsess> {
+export class Progres extends Component<ISuccsess> {
 	protected _total: HTMLElement;
 	protected _closeButton: HTMLButtonElement;
 

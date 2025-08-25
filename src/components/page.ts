@@ -13,14 +13,19 @@ export class Page extends Component<IPage> {
 	protected _catalog: HTMLElement;
 	protected _wrapper: HTMLElement;
 	protected _basket: HTMLElement;
+	
+	// Помогает безопасно получать DOM-елементы
+	private getElement<T extends HTMLElement>(selector: string): T {
+		return ensureElement<T>(selector, this.container);
+	}
 
 	constructor(container: HTMLElement, protected events: IEvents) {
 		super(container);
 
-		this._counter = ensureElement<HTMLElement>('.header__basket-counter');
-		this._catalog = ensureElement<HTMLElement>('.gallery');
-		this._wrapper = ensureElement<HTMLElement>('.page__wrapper');
-		this._basket = ensureElement<HTMLElement>('.header__basket');
+		this._counter = this.getElement('.header__basket-counter');
+		this._catalog = this.getElement('.gallery');
+		this._wrapper = this.getElement('.page__wrapper');
+		this._basket = this.getElement('.header__basket');
 
 		this._basket.addEventListener('click', () => {
 			this.events.emit('basket:open');
