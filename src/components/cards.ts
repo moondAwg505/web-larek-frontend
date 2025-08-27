@@ -47,25 +47,17 @@ export class Cards extends Component<ICards> {
 		this.container.dataset.id = value;
 	}
 
-	get id(): string {
-		return this.container.dataset.id || '';
-	}
-
 	set identifierCard(value: string) {
 		this.idIdeficationElement.textContent = value;
-	}
-
-	get identifierCard(): string {
-		return this.idIdeficationElement.textContent || '';
 	}
 
 	set title(value: string) {
 		this.setText(this.titleElement, value);
 	}
 
-	get title(): string {
-		return this.titleElement.textContent || '';
-	}
+	// get title(): string {
+	// 	return this.titleElement.textContent || '';
+	// }
 
 	set description(value: string) {
 		this.setText(this.descriptionElement, value);
@@ -77,10 +69,6 @@ export class Cards extends Component<ICards> {
 
 	set priceElement(value: number) {
 		this.setText(this.price, value ? `${value} синапcов` : 'бесценно');
-	}
-
-	get priceElement(): number {
-		return +this.price.textContent;
 	}
 
 	set categoryElement(value: string) {

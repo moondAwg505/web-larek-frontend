@@ -118,19 +118,35 @@ events.on('product:select', (item: IProduct) => {
 
 // Добавление в корзину
 events.on('basket:add', (product: IProduct) => {
-	appData.addBasket(product);
-	events.emit('basket:update');
+	appData.addToBasket(product);
 });
 
 // Удаление из корзины
 events.on('basket:remove', (product: IProduct) => {
-	appData.removeBasket(product);
-	events.emit('basket:update');
+	appData.removeFromBasket(product);
+});
+
+// Добавлен отдельный функционал для обновления корзины
+events.on('basket:change', () => {
+    page.counter = appData.basket.length;
+    
+    basket.items = appData.basket.map((product) => {
+        const card = new Cards(cloneTemplate(cardBasketTemplate), {
+            onClick: () => events.emit('basket:remove', product),
+        });
+        
+        return card.render({
+            title: product.title,
+            price: product.price,
+        });
+    });
+    
+    basket.priceTotal = appData.getTotal();
 });
 
 // Открытие корзины
 events.on('basket:open', () => {
-	basket.selected = appData.basket.map((item) => item.id);
+	basket.selected = appData.basket.length > 0;
 	modal.render({
 		content: basket.render({
 			price: appData.getTotal(),
@@ -189,18 +205,17 @@ events.on('modal:close', () => (page.locked = false));
 
 // Отправка заказа
 events.on('order:submit', (data: IOrder) => {
-	console.log('order form submitted', data);
-	events.emit('contact:open');
+	console.log('Форма заказа отправлена', data);
+
+	// Вызывается сразу код для рендера формы контактов
+	modal.render({
+        content: contact.render({ phone: '', email: '', errors: [], valid: false }),
+    });
+    modal.open();
 });
 
 events.on('contacts:submit', () => {
-	api
-		.order({
-			...appData.order,
-			// ...data,
-			total: appData.getTotal(),
-			items: appData.basket.map((item) => item.id),
-		})
+api.order(appData.getOrderToPost())
 		.then((res) => {
 			appData.clearBasket();
 			const progres = new Progres(cloneTemplate(successTemplate), {

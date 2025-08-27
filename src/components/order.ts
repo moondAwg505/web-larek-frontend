@@ -32,10 +32,6 @@ this.container.querySelector('[name="payment-cash"]')
 		});
 	}
 
-	set valid(value: boolean) {
-		this._submit.disabled = !value;
-	}
-
 	set address(value: string) {
 		(this.container.elements.namedItem('address') as HTMLInputElement).value =
 			value;

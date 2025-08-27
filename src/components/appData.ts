@@ -15,20 +15,18 @@ export interface CatalogChangeEvent {
 export class AppState extends Model<IApiStatus> {
 	catalog: IProduct[] = [];
 	basket: IProduct[] = [];
-	order: IOrder = {
+	order: Partial<IOrder> = {
 		email: '',
 		phone: '',
 		address: '',
 		payment: '',
 		items: [],
-		total: 0,
-		paying: '',
 	};
 
 	preview: string | null;
 	formErrors: ErrorForm = {};
 
-	addBasket(product: IProduct) {
+	addToBasket(product: IProduct) {
 		// Добавляем товар, если его ещё нет в корзине
 		if (!this.basket.find((p) => p.id === product.id)) {
 			this.basket.push(product);
@@ -37,7 +35,7 @@ export class AppState extends Model<IApiStatus> {
 		}
 	}
 
-	removeBasket(product: IProduct) {
+	removeFromBasket(product: IProduct) {
 		this.basket = this.basket.filter((p) => p.id !== product.id);
 		this.order.items = this.order.items.filter((id) => id !== product.id);
 		this.updateBasket();
@@ -66,6 +64,16 @@ export class AppState extends Model<IApiStatus> {
 	setPreview(product: IProduct) {
 		this.preview = product.id;
 		this.emitChanges('preview:changed', product);
+	}
+
+	
+	// Добавлен готовый формат заказа для отправки на сервер
+	getOrderToPost(): IOrder {
+		return {
+			...this.order as IOrder,
+			items: this.basket.map((item) => item.id),
+			total: this.getTotal()
+		}
 	}
 
 	setPayment(value:string) {

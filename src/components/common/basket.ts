@@ -37,13 +37,9 @@ export class Basket extends Component<IBasket> {
 		this._button.disabled = items.length ? false : true;
 	}
 
-	set selected(items: string[]) {
-		if (items.length) {
-			this.setDisabled(this._button, false);
-		} else {
-			this.setDisabled(this._button, true);
-		}
-	}
+	set selected(value: boolean) {
+    this.setDisabled(this._button, !value);
+}
 
 	set priceTotal(price: number) {
 		this.setText(this._price, `${price.toString()} синапсов`);
