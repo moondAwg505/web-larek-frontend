@@ -66,7 +66,4 @@ export class ContactsForm extends Form<IOrder> {
 			value;
 	}
 
-	set valid(value: boolean) {
-		this._submit.disabled = !value;
-	}
 }

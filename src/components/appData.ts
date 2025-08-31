@@ -19,8 +19,7 @@ export class AppState extends Model<IApiStatus> {
 		email: '',
 		phone: '',
 		address: '',
-		payment: '',
-		items: [],
+		payment: ''
 	};
 
 	preview: string | null;
@@ -30,15 +29,19 @@ export class AppState extends Model<IApiStatus> {
 		// Добавляем товар, если его ещё нет в корзине
 		if (!this.basket.find((p) => p.id === product.id)) {
 			this.basket.push(product);
-			this.order.items.push(product.id); // ID добавляем синхронно
-			this.updateBasket();
+			
+		if (!this.order.items) {
+			this.order.items = []
+		}	
+		this.order.items.push(product.id)
+		this.events.emit("basket:update")	
 		}
 	}
 
 	removeFromBasket(product: IProduct) {
 		this.basket = this.basket.filter((p) => p.id !== product.id);
 		this.order.items = this.order.items.filter((id) => id !== product.id);
-		this.updateBasket();
+		
 	}
 
 	clearBasket() {
